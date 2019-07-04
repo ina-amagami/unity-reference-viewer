@@ -18,7 +18,7 @@ namespace ReferenceViewer
 
 		public static void CreateWindow(Result result)
 		{
-			var window = GetWindow<ReferenceViewerWindow>();
+			var window = GetWindow<ReferenceViewerWindow>("ReferenceViewer");
 			window.SetResult(result);
 		}
 
