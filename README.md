@@ -37,4 +37,4 @@ SpotlightはMacで使われている標準の検索機能です。
 再配布等については、MITライセンスに準拠して下さい。  
 https://opensource.org/licenses/mit-license.php  
 
-Copyright (c) 2019 ina-amagami (ina.amagami@gmail.com)
+Copyright (c) 2019 ina-amagami (ina_amagami@gc-career.com)
