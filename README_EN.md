@@ -35,4 +35,4 @@ Because me have not examined the search method, it may be possible to search fas
 This software is released under the MIT License.  
 https://opensource.org/licenses/mit-license.php
 
-Copyright (c) 2019 ina-amagami (ina_amagami@gc-career.com)
+Copyright (c) 2019 ina-amagami (ina@amagamina.jp)
