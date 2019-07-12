@@ -5,7 +5,7 @@
 Unity上でアセットの参照を検索し、ウィンドウ上に表示するツールです。  
 (例：テクスチャを使用しているマテリアルを調べる)  
   
-詳しい解説は[**こちら**](https://gc-career.com/tech-blog/reference-viewer/)
+詳しい解説は[**こちら**](https://amagamina.jp/reference-viewer/)
 
 ## ライセンス条項
 
