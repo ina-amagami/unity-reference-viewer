@@ -49,7 +49,7 @@ namespace ReferenceViewer
 		public AssetReferenceData(string path) : base(path, isCreateListItem: false)
 		{
 			References = null;
-			IsFoldout = false;
+			IsFoldout = true;
 		}
 
 		public void AddReference(string path)
