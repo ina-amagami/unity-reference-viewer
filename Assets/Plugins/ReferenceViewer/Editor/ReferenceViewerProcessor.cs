@@ -163,6 +163,17 @@ namespace ReferenceViewer
 							}
 						}
 
+						// metaの中に参照を握っているケース
+						if (extension == ".meta")
+						{
+							var assetPath = line.Replace(".meta", "").Replace(applicationDataPathWithoutAssets, "");
+							if (!string.Equals(assetPath, path, StringComparison.OrdinalIgnoreCase))
+							{
+								assetData.AddReference(assetPath);
+							}
+							continue;
+						}
+
 						assetData.AddReference(line.Replace(applicationDataPathWithoutAssets, ""));
 					}
 					p.Close();
