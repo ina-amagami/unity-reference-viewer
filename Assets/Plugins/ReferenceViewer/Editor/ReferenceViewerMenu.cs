@@ -120,6 +120,38 @@ namespace ReferenceViewer
 
 #endregion
 
+#region Mac/GitGrep
+
+		[MenuItem("Assets/Find References In Project/By GitGrep", true)]
+		static bool IsEnabledByGitGrep()
+		{
+			if (Selection.assetGUIDs == null || Selection.assetGUIDs.Length == 0)
+			{
+				return false;
+			}
+			return true;
+		}
+
+		[MenuItem("Assets/Find References In Project", false, 27)]
+		[MenuItem("Assets/Find References In Project/By GitGrep", false, 27)]
+		public static void FindReferencesByGitGrep()
+		{
+			if (!LoadSettings())
+			{
+				return;
+			}
+
+			string command = "cd {0} && git grep -l {1} | xargs -ITEXT echo {0}/TEXT";
+			Result result = ReferenceViewerProcessor.FindReferencesByCommand(command, settings.GetExcludeExtentions());
+			if (result != null)
+			{
+				result.Type = Result.SearchType.OSX_GitGrep;
+				ReferenceViewerWindow.CreateWindow(result);
+			}
+		}
+
+#endregion
+
 #endif
 
 #if UNITY_EDITOR_WIN
