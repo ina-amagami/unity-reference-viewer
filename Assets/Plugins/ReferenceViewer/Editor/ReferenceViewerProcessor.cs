@@ -36,7 +36,11 @@ namespace ReferenceViewer
 			/// <summary>
 			/// Win/FindStr
 			/// </summary>
-			WIN_FindStr
+			WIN_FindStr,
+			/// <summary>
+			/// Win/GitGrep
+			/// </summary>
+			WIN_GitGrep
 		}
 		public SearchType Type { get; set; }
 
@@ -69,8 +73,24 @@ namespace ReferenceViewer
 		/// OSコマンドで検索を実行
 		/// Execute search with OS command.
 		/// </summary>
-		public static Result FindReferencesByCommand(string command, List<string> excludeExtentionList = null)
+		public static Result FindReferencesByCommand(Result.SearchType searchType, string command, List<string> excludeExtentionList = null)
 		{
+			// bash実行
+			// Execution by bash.
+			string file = "/bin/bash";
+			if (searchType == Result.SearchType.WIN_FindStr)
+			{
+				// FindStr実行
+				// Execution "findstr" command by windowsOS.
+				file = "findstr";
+			}
+			else if (searchType == Result.SearchType.WIN_GitGrep)
+			{
+				// git実行
+				// Execution "git" command by windowsOS.
+				file = "git";
+			}
+
 			Result result = new Result();
 			string applicationDataPathWithoutAssets = Application.dataPath.Replace("Assets", "");
 
@@ -136,114 +156,35 @@ namespace ReferenceViewer
 						return result;
 					}
 
+					var p = new Process();
+					string cmd = string.Format(command, Application.dataPath, guid);
+					p.StartInfo.FileName = file;
 #if UNITY_EDITOR_OSX
-
-					// bash実行
-					// Execution by bash.
-					var p = new Process();
-					string cmd = string.Format(command, Application.dataPath, guid);
-					p.StartInfo.FileName = "/bin/bash";
 					p.StartInfo.Arguments = "-c \" " + cmd + " \"";
-					p.StartInfo.UseShellExecute = false;
-					p.StartInfo.RedirectStandardOutput = true;
-					p.Start();
-					p.WaitForExit();
-					foreach (var line in p.StandardOutput.ReadToEnd().Split(new[] { Environment.NewLine }, StringSplitOptions.None))
-					{
-						if (string.IsNullOrWhiteSpace(line)) continue;
-
-						// 出力不要な拡張子なら出力しない
-						// Do not output if extensions that do not require output.
-						var extension = Path.GetExtension(line);
-						if (excludeExtentionList != null)
-						{
-							if (excludeExtentionList.Contains(extension))
-							{
-								continue;
-							}
-						}
-
-						// metaの中に参照を握っているケース
-						if (extension == ".meta")
-						{
-							var assetPath = line.Replace(".meta", "").Replace(applicationDataPathWithoutAssets, "");
-							if (!string.Equals(assetPath, path, StringComparison.OrdinalIgnoreCase))
-							{
-								assetData.AddReference(assetPath);
-							}
-							continue;
-						}
-
-						assetData.AddReference(line.Replace(applicationDataPathWithoutAssets, ""));
-					}
-					p.Close();
-
 #elif UNITY_EDITOR_WIN
-
-					// FindStr実行
-					// Execution "findstr" command by windowsOS.
-					var p = new Process();
-					string cmd = string.Format(command, Application.dataPath, guid);
-					p.StartInfo.FileName = "findstr.exe";
 					p.StartInfo.Arguments = cmd;
 					p.StartInfo.CreateNoWindow = true;
+#endif
 					p.StartInfo.UseShellExecute = false;
 					p.StartInfo.RedirectStandardOutput = true;
 					p.Start();
 
-					List<string> assetPathList = new List<string>();
-					while (p.StandardOutput.Peek() >= 0)
+					if (searchType == Result.SearchType.WIN_FindStr)
 					{
-						string line = p.StandardOutput.ReadLine();
-						UnityEngine.Debug.Log(line);
-
-						// 「ドライブ:ファイルパス:行数:行内容」 の形式で出力されるので、
-						// ドライブからファイルパスの部分だけ取り出す
-						// Output format is 「DiscDrive:FilePath:LineNumber:LineContent」
-						// Pick out 「DiscDrive:FilePath」
-						int driveIndex = line.IndexOf(':');
-						if (driveIndex < 0)
-						{
-							continue;
-						}
-						int pathEndIndex = line.IndexOf(':', driveIndex + 1);
-						if (pathEndIndex < 0)
-						{
-							continue;
-						}
-						string formatedPath = line.Substring(0, pathEndIndex);
-
-						// 出力不要な拡張子なら出力しない
-						// Do not output if extensions that do not require output.
-						if (excludeExtentionList != null)
-						{
-							var extension = Path.GetExtension(formatedPath);
-							if (excludeExtentionList.Contains(extension))
-							{
-								continue;
-							}
-						}
-
-						// 重複排除
-						// Deduplication.
-						string assetPath = formatedPath.Replace(applicationDataPathWithoutAssets, "");
-						if (assetPathList.Contains(assetPath))
-						{
-							continue;
-						}
-						assetPathList.Add(assetPath);
-
-						assetData.AddReference(assetPath);
+						FindByFindStr(p, applicationDataPathWithoutAssets, assetData, excludeExtentionList);
 					}
-					p.WaitForExit();
-					p.Close();
+					else
+					{
+						FindByCommand(p, applicationDataPathWithoutAssets, path, assetData, excludeExtentionList);
+					}
 
-#endif
+					p.Close();
 
 					assetData.Apply();
 					result.Assets.Add(assetData);
 				}
 				EditorUtility.ClearProgressBar();
+				result.Type = searchType;
 				return result;
 			}
 			catch (System.Exception e)
@@ -252,6 +193,94 @@ namespace ReferenceViewer
 				EditorUtility.ClearProgressBar();
 			}
 			return null;
+		}
+
+		private static void FindByCommand(Process p, string applicationDataPathWithoutAssets, string path,
+			AssetReferenceData assetData, List<string> excludeExtentionList = null)
+		{
+			p.WaitForExit();
+			foreach (var line in p.StandardOutput.ReadToEnd().Split(new[] {"\n"}, StringSplitOptions.None))
+			{
+				if (string.IsNullOrWhiteSpace(line)) continue;
+
+				// 出力不要な拡張子なら出力しない
+				// Do not output if extensions that do not require output.
+				var extension = Path.GetExtension(line);
+				if (excludeExtentionList != null)
+				{
+					if (excludeExtentionList.Contains(extension))
+					{
+						continue;
+					}
+				}
+
+				var projectFile = Path.Combine(Application.dataPath, line);
+				// metaの中に参照を握っているケース
+				if (extension == ".meta")
+				{
+					var assetPath = projectFile.Replace(".meta", "").Replace(applicationDataPathWithoutAssets, "");
+					if (!string.Equals(assetPath, path, StringComparison.OrdinalIgnoreCase))
+					{
+						assetData.AddReference(assetPath);
+					}
+
+					continue;
+				}
+
+				assetData.AddReference(projectFile.Replace(applicationDataPathWithoutAssets, ""));
+			}
+		}
+
+		private static void FindByFindStr(Process p, string applicationDataPathWithoutAssets, AssetReferenceData assetData, List<string> excludeExtentionList = null)
+		{
+			List<string> assetPathList = new List<string>();
+			while (p.StandardOutput.Peek() >= 0)
+			{
+				string line = p.StandardOutput.ReadLine();
+				UnityEngine.Debug.Log(line);
+
+				// 「ドライブ:ファイルパス:行数:行内容」 の形式で出力されるので、
+				// ドライブからファイルパスの部分だけ取り出す
+				// Output format is 「DiscDrive:FilePath:LineNumber:LineContent」
+				// Pick out 「DiscDrive:FilePath」
+				int driveIndex = line.IndexOf(':');
+				if (driveIndex < 0)
+				{
+					continue;
+				}
+
+				int pathEndIndex = line.IndexOf(':', driveIndex + 1);
+				if (pathEndIndex < 0)
+				{
+					continue;
+				}
+
+				string formatedPath = line.Substring(0, pathEndIndex);
+
+				// 出力不要な拡張子なら出力しない
+				// Do not output if extensions that do not require output.
+				if (excludeExtentionList != null)
+				{
+					var extension = Path.GetExtension(formatedPath);
+					if (excludeExtentionList.Contains(extension))
+					{
+						continue;
+					}
+				}
+
+				// 重複排除
+				// Deduplication.
+				string assetPath = formatedPath.Replace(applicationDataPathWithoutAssets, "");
+				if (assetPathList.Contains(assetPath))
+				{
+					continue;
+				}
+
+				assetPathList.Add(assetPath);
+
+				assetData.AddReference(assetPath);
+			}
+			p.WaitForExit();
 		}
 	}
 }

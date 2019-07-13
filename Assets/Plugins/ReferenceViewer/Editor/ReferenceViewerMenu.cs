@@ -71,11 +71,10 @@ namespace ReferenceViewer
 				return;
 			}
 
-			string command = "mdfind -onlyin {0} {1}";
-			Result result = ReferenceViewerProcessor.FindReferencesByCommand(command, settings.GetExcludeExtentions());
+			string command = "mdfind -onlyin '{0}' {1}";
+			Result result = ReferenceViewerProcessor.FindReferencesByCommand(Result.SearchType.OSX_Spotlight, command, settings.GetExcludeExtentions());
 			if (result != null)
 			{
-				result.Type = Result.SearchType.OSX_Spotlight;
 				ReferenceViewerWindow.CreateWindow(result);
 			}
 		}
@@ -103,17 +102,16 @@ namespace ReferenceViewer
 				return;
 			}
 
-			string command = "grep {1} -rl {0} ";
+			string command = "grep {1} -rl '{0}' ";
 			string[] excludes = settings.GetExcludeFiles();
 			for (int i = 0; i < excludes.Length; ++i)
 			{
 				command += string.Format("--exclude='{0}' ", excludes[i]);
 			}
 
-			Result result = ReferenceViewerProcessor.FindReferencesByCommand(command);
+			Result result = ReferenceViewerProcessor.FindReferencesByCommand(Result.SearchType.OSX_Grep, command);
 			if (result != null)
 			{
-				result.Type = Result.SearchType.OSX_Grep;
 				ReferenceViewerWindow.CreateWindow(result);
 			}
 		}
@@ -141,11 +139,10 @@ namespace ReferenceViewer
 				return;
 			}
 
-			string command = "cd {0} && git grep -l {1} | xargs -ITEXT echo {0}/TEXT";
-			Result result = ReferenceViewerProcessor.FindReferencesByCommand(command, settings.GetExcludeExtentions());
+			string command = "git -C '{0}' grep -l {1}";
+			Result result = ReferenceViewerProcessor.FindReferencesByCommand(Result.SearchType.OSX_GitGrep, command, settings.GetExcludeExtentions());
 			if (result != null)
 			{
-				result.Type = Result.SearchType.OSX_GitGrep;
 				ReferenceViewerWindow.CreateWindow(result);
 			}
 		}
@@ -157,8 +154,8 @@ namespace ReferenceViewer
 #if UNITY_EDITOR_WIN
 
 #region Win/FindStr
-		
-		[MenuItem("Assets/Find References In Project", true)]
+
+		[MenuItem("Assets/Find References In Project/By FindStr", true)]
 		static bool IsEnabledByFindStr()
 		{
 			if (Selection.assetGUIDs == null || Selection.assetGUIDs.Length == 0)
@@ -167,20 +164,65 @@ namespace ReferenceViewer
 			}
 			return true;
 		}
-		
+
 		[MenuItem("Assets/Find References In Project", false, 25)]
+		[MenuItem("Assets/Find References In Project/By FindStr", false, 25)]
 		public static void FindReferencesByFindStr()
 		{
 			if (!LoadSettings())
 			{
 				return;
 			}
-			
-			string command = "/S {1} {0}\\*";
-			Result result = ReferenceViewerProcessor.FindReferencesByCommand(command, settings.GetExcludeExtentions());
+
+			string command = "/S {1} \"{0}\\*\"";
+			Result result = ReferenceViewerProcessor.FindReferencesByCommand(Result.SearchType.WIN_FindStr, command, settings.GetExcludeExtentions());
 			if (result != null)
 			{
-				result.Type = Result.SearchType.WIN_FindStr;
+				ReferenceViewerWindow.CreateWindow(result);
+			}
+		}
+
+#endregion
+
+#region Win/GitGrep
+		
+		[MenuItem("Assets/Find References In Project/By GitGrep", true)]
+		static bool IsEnabledByGitGrep()
+		{
+			if (Selection.assetGUIDs == null || Selection.assetGUIDs.Length == 0)
+			{
+				return false;
+			}
+
+			string pathEnv = System.Environment.GetEnvironmentVariable("Path", System.EnvironmentVariableTarget.Process);
+			if (string.IsNullOrWhiteSpace(pathEnv))
+			{
+				return false;
+			}
+			string[] paths = pathEnv.Split(';');
+			foreach (string path in paths)
+			{
+				if (System.IO.File.Exists(System.IO.Path.Combine(path, "git.exe")))
+				{
+					return true;
+				}
+			}
+			return false;
+		}
+		
+		[MenuItem("Assets/Find References In Project", false, 27)]
+		[MenuItem("Assets/Find References In Project/By GitGrep", false, 27)]
+		public static void FindReferencesByGitGrep()
+		{
+			if (!LoadSettings())
+			{
+				return;
+			}
+
+			string command = "-C \"{0}\" grep -l {1}";
+			Result result = ReferenceViewerProcessor.FindReferencesByCommand(Result.SearchType.WIN_GitGrep, command, settings.GetExcludeExtentions());
+			if (result != null)
+			{
 				ReferenceViewerWindow.CreateWindow(result);
 			}
 		}
