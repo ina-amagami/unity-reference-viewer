@@ -67,7 +67,6 @@ namespace ReferenceViewer
 		public List<string> GetExcludeExtentions()
 		{
 			List<string> excludes = new List<string>(excludeExtentions);
-			excludes.Add(".meta");
 			return excludes;
 		}
 
