@@ -7,6 +7,7 @@ This software is released under the MIT License.
 https://opensource.org/licenses/mit-license.php
 */
 
+using System;
 using UnityEngine;
 using UnityEditor;
 using System.IO;
@@ -28,6 +29,10 @@ namespace ReferenceViewer
 			/// Mac/Grep
 			/// </summary>
 			OSX_Grep,
+			/// <summary>
+			/// Mac/GitGrep
+			/// </summary>
+			OSX_GitGrep,
 			/// <summary>
 			/// Win/FindStr
 			/// </summary>
@@ -142,15 +147,16 @@ namespace ReferenceViewer
 					p.StartInfo.UseShellExecute = false;
 					p.StartInfo.RedirectStandardOutput = true;
 					p.Start();
-					while (p.StandardOutput.Peek() >= 0)
+					p.WaitForExit();
+					foreach (var line in p.StandardOutput.ReadToEnd().Split(new[] { Environment.NewLine }, StringSplitOptions.None))
 					{
-						string line = p.StandardOutput.ReadLine();
+						if (string.IsNullOrWhiteSpace(line)) continue;
 
 						// 出力不要な拡張子なら出力しない
 						// Do not output if extensions that do not require output.
+						var extension = Path.GetExtension(line);
 						if (excludeExtentionList != null)
 						{
-							var extension = Path.GetExtension(line);
 							if (excludeExtentionList.Contains(extension))
 							{
 								continue;
@@ -159,7 +165,6 @@ namespace ReferenceViewer
 
 						assetData.AddReference(line.Replace(applicationDataPathWithoutAssets, ""));
 					}
-					p.WaitForExit();
 					p.Close();
 
 #elif UNITY_EDITOR_WIN
