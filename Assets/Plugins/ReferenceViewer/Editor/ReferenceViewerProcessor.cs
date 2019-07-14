@@ -171,7 +171,7 @@ namespace ReferenceViewer
 
 					if (searchType == Result.SearchType.WIN_FindStr)
 					{
-						FindByFindStr(p, applicationDataPathWithoutAssets, assetData, excludeExtentionList);
+						FindByFindStr(p, applicationDataPathWithoutAssets, path, assetData, excludeExtentionList);
 					}
 					else
 					{
@@ -231,7 +231,7 @@ namespace ReferenceViewer
 			}
 		}
 
-		private static void FindByFindStr(Process p, string applicationDataPathWithoutAssets, AssetReferenceData assetData, List<string> excludeExtentionList = null)
+		private static void FindByFindStr(Process p, string applicationDataPathWithoutAssets, string path, AssetReferenceData assetData, List<string> excludeExtentionList = null)
 		{
 			List<string> assetPathList = new List<string>();
 			while (p.StandardOutput.Peek() >= 0)
@@ -259,9 +259,9 @@ namespace ReferenceViewer
 
 				// 出力不要な拡張子なら出力しない
 				// Do not output if extensions that do not require output.
+				var extension = Path.GetExtension(formatedPath);
 				if (excludeExtentionList != null)
 				{
-					var extension = Path.GetExtension(formatedPath);
 					if (excludeExtentionList.Contains(extension))
 					{
 						continue;
@@ -274,6 +274,16 @@ namespace ReferenceViewer
 				if (assetPathList.Contains(assetPath))
 				{
 					continue;
+				}
+
+				// metaの中に参照を握っているケース
+				if (extension == ".meta")
+				{
+					assetPath = assetPath.Replace(".meta", "");
+					if (string.Equals(assetPath, path, StringComparison.OrdinalIgnoreCase))
+					{
+						continue;
+					}
 				}
 
 				assetPathList.Add(assetPath);
