@@ -25,10 +25,10 @@ Spotlight is a standard search function(mdfind) used on Mac.
 It works very fast, but the search fails unless the file index is correctly created.
 If you need to search exactly please use the Grep version.
 
-## In WindowsOS
+## Use GitGrep
 
-Since I was using only Mac at first, I made a hurry when I needed a Windows version.
-Because me have not examined the search method, it may be possible to search faster.
+The newly added GitGrep version can find projects managed by Git accurately and quickly.
+Can use by Mac and Windows.
 
 ## License
 
