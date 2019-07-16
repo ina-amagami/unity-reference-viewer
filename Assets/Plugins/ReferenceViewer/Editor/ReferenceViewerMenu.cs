@@ -174,7 +174,7 @@ namespace ReferenceViewer
 				return;
 			}
 
-			string command = "/S {1} \"{0}\\*\"";
+			string command = "/M /S {1} *";
 			Result result = ReferenceViewerProcessor.FindReferencesByCommand(Result.SearchType.WIN_FindStr, command, settings.GetExcludeExtentions());
 			if (result != null)
 			{

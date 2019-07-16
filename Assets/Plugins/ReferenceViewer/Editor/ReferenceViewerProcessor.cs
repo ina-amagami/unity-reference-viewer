@@ -91,6 +91,8 @@ namespace ReferenceViewer
 				file = "git";
 			}
 
+			string[] eol = {searchType == Result.SearchType.WIN_GitGrep ? "\n" : Environment.NewLine};
+
 			Result result = new Result();
 			string applicationDataPathWithoutAssets = Application.dataPath.Replace("Assets", "");
 
@@ -167,16 +169,14 @@ namespace ReferenceViewer
 #endif
 					p.StartInfo.UseShellExecute = false;
 					p.StartInfo.RedirectStandardOutput = true;
-					p.Start();
-
 					if (searchType == Result.SearchType.WIN_FindStr)
 					{
-						FindByFindStr(p, applicationDataPathWithoutAssets, assetData, excludeExtentionList);
+						p.StartInfo.WorkingDirectory = Application.dataPath;
 					}
-					else
-					{
-						FindByCommand(p, applicationDataPathWithoutAssets, path, assetData, excludeExtentionList);
-					}
+					p.Start();
+					p.WaitForExit();
+
+					FindByCommand(p, applicationDataPathWithoutAssets, path, eol, assetData, excludeExtentionList);
 
 					p.Close();
 
@@ -196,10 +196,9 @@ namespace ReferenceViewer
 		}
 
 		private static void FindByCommand(Process p, string applicationDataPathWithoutAssets, string path,
-			AssetReferenceData assetData, List<string> excludeExtentionList = null)
+			string[] eol, AssetReferenceData assetData, List<string> excludeExtentionList = null)
 		{
-			p.WaitForExit();
-			foreach (var line in p.StandardOutput.ReadToEnd().Split(new[] {"\n"}, StringSplitOptions.None))
+			foreach (var line in p.StandardOutput.ReadToEnd().Split(eol, StringSplitOptions.None))
 			{
 				if (line == null || line.Trim() == "") continue;
 
@@ -229,58 +228,6 @@ namespace ReferenceViewer
 
 				assetData.AddReference(projectFile.Replace(applicationDataPathWithoutAssets, ""));
 			}
-		}
-
-		private static void FindByFindStr(Process p, string applicationDataPathWithoutAssets, AssetReferenceData assetData, List<string> excludeExtentionList = null)
-		{
-			List<string> assetPathList = new List<string>();
-			while (p.StandardOutput.Peek() >= 0)
-			{
-				string line = p.StandardOutput.ReadLine();
-				UnityEngine.Debug.Log(line);
-
-				// 「ドライブ:ファイルパス:行数:行内容」 の形式で出力されるので、
-				// ドライブからファイルパスの部分だけ取り出す
-				// Output format is 「DiscDrive:FilePath:LineNumber:LineContent」
-				// Pick out 「DiscDrive:FilePath」
-				int driveIndex = line.IndexOf(':');
-				if (driveIndex < 0)
-				{
-					continue;
-				}
-
-				int pathEndIndex = line.IndexOf(':', driveIndex + 1);
-				if (pathEndIndex < 0)
-				{
-					continue;
-				}
-
-				string formatedPath = line.Substring(0, pathEndIndex);
-
-				// 出力不要な拡張子なら出力しない
-				// Do not output if extensions that do not require output.
-				if (excludeExtentionList != null)
-				{
-					var extension = Path.GetExtension(formatedPath);
-					if (excludeExtentionList.Contains(extension))
-					{
-						continue;
-					}
-				}
-
-				// 重複排除
-				// Deduplication.
-				string assetPath = formatedPath.Replace(applicationDataPathWithoutAssets, "");
-				if (assetPathList.Contains(assetPath))
-				{
-					continue;
-				}
-
-				assetPathList.Add(assetPath);
-
-				assetData.AddReference(assetPath);
-			}
-			p.WaitForExit();
 		}
 	}
 }
