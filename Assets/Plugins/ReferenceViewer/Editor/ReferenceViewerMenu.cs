@@ -195,7 +195,7 @@ namespace ReferenceViewer
 			}
 
 			string pathEnv = System.Environment.GetEnvironmentVariable("Path", System.EnvironmentVariableTarget.Process);
-			if (string.IsNullOrWhiteSpace(pathEnv))
+			if (pathEnv == null || pathEnv.Trim() == "")
 			{
 				return false;
 			}

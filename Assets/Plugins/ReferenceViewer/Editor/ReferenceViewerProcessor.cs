@@ -201,7 +201,7 @@ namespace ReferenceViewer
 			p.WaitForExit();
 			foreach (var line in p.StandardOutput.ReadToEnd().Split(new[] {"\n"}, StringSplitOptions.None))
 			{
-				if (string.IsNullOrWhiteSpace(line)) continue;
+				if (line == null || line.Trim() == "") continue;
 
 				// 出力不要な拡張子なら出力しない
 				// Do not output if extensions that do not require output.
