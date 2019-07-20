@@ -17,40 +17,6 @@ using System.Collections.Generic;
 
 namespace ReferenceViewer
 {
-	public class Result
-	{
-		public enum SearchType
-		{
-			/// <summary>
-			/// Mac/Spotlight
-			/// </summary>
-			OSX_Spotlight,
-			/// <summary>
-			/// Mac/Grep
-			/// </summary>
-			OSX_Grep,
-			/// <summary>
-			/// Mac/GitGrep
-			/// </summary>
-			OSX_GitGrep,
-			/// <summary>
-			/// Win/FindStr
-			/// </summary>
-			WIN_FindStr,
-			/// <summary>
-			/// Win/GitGrep
-			/// </summary>
-			WIN_GitGrep
-		}
-		public SearchType Type { get; set; }
-
-		/// <summary>
-		/// アセット毎の参照情報
-		/// Reference information for each asset.
-		/// </summary>
-		public List<AssetReferenceData> Assets = new List<AssetReferenceData>();
-	}
-
 	/// <summary>
 	/// 検索処理
 	/// Search process implemention.
@@ -73,26 +39,10 @@ namespace ReferenceViewer
 		/// OSコマンドで検索を実行
 		/// Execute search with OS command.
 		/// </summary>
-		public static Result FindReferencesByCommand(Result.SearchType searchType, string command, List<string> excludeExtentionList = null)
+		public static Result FindReferencesByCommand(Result.SearchType searchType, List<string> excludeExtentionList)
 		{
-			// bash実行
-			// Execution by bash.
-			string file = "/bin/bash";
-			if (searchType == Result.SearchType.WIN_FindStr)
-			{
-				// FindStr実行
-				// Execution "findstr" command by windowsOS.
-				file = "findstr";
-			}
-			else if (searchType == Result.SearchType.WIN_GitGrep)
-			{
-				// git実行
-				// Execution "git" command by windowsOS.
-				file = "git";
-			}
-
-			string[] eol = {searchType == Result.SearchType.WIN_GitGrep ? "\n" : Environment.NewLine};
-
+			CommandInfo commandInfo = searchType.Command();
+			string[] eol = {commandInfo.NewLine};
 			Result result = new Result();
 			string applicationDataPathWithoutAssets = Application.dataPath.Replace("Assets", "");
 
@@ -159,20 +109,14 @@ namespace ReferenceViewer
 					}
 
 					var p = new Process();
-					string cmd = string.Format(command, Application.dataPath, guid);
-					p.StartInfo.FileName = file;
-#if UNITY_EDITOR_OSX
-					p.StartInfo.Arguments = "-c \" " + cmd + " \"";
-#elif UNITY_EDITOR_WIN
-					p.StartInfo.Arguments = cmd;
+					string arguments = string.Format(commandInfo.Arguments, Application.dataPath, guid);
+					arguments += searchType.AppendArguments(excludeExtentionList);
+					p.StartInfo.FileName = commandInfo.Command;
+					p.StartInfo.Arguments = arguments;
 					p.StartInfo.CreateNoWindow = true;
-#endif
 					p.StartInfo.UseShellExecute = false;
 					p.StartInfo.RedirectStandardOutput = true;
-					if (searchType == Result.SearchType.WIN_FindStr)
-					{
-						p.StartInfo.WorkingDirectory = Application.dataPath;
-					}
+					p.StartInfo.WorkingDirectory = Application.dataPath;
 					p.Start();
 					p.WaitForExit();
 

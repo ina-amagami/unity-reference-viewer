@@ -71,8 +71,7 @@ namespace ReferenceViewer
 				return;
 			}
 
-			string command = "mdfind -onlyin '{0}' {1}";
-			Result result = ReferenceViewerProcessor.FindReferencesByCommand(Result.SearchType.OSX_Spotlight, command, settings.GetExcludeExtentions());
+			Result result = ReferenceViewerProcessor.FindReferencesByCommand(Result.SearchType.OSX_Spotlight, settings.GetExcludeExtentions());
 			if (result != null)
 			{
 				ReferenceViewerWindow.CreateWindow(result);
@@ -102,14 +101,7 @@ namespace ReferenceViewer
 				return;
 			}
 
-			string command = "grep {1} -rl '{0}' ";
-			string[] excludes = settings.GetExcludeFiles();
-			for (int i = 0; i < excludes.Length; ++i)
-			{
-				command += string.Format("--exclude='{0}' ", excludes[i]);
-			}
-
-			Result result = ReferenceViewerProcessor.FindReferencesByCommand(Result.SearchType.OSX_Grep, command);
+			Result result = ReferenceViewerProcessor.FindReferencesByCommand(Result.SearchType.OSX_Grep, settings.GetExcludeExtentions());
 			if (result != null)
 			{
 				ReferenceViewerWindow.CreateWindow(result);
@@ -139,8 +131,7 @@ namespace ReferenceViewer
 				return;
 			}
 
-			string command = "git -C '{0}' grep -l {1}";
-			Result result = ReferenceViewerProcessor.FindReferencesByCommand(Result.SearchType.OSX_GitGrep, command, settings.GetExcludeExtentions());
+			Result result = ReferenceViewerProcessor.FindReferencesByCommand(Result.SearchType.OSX_GitGrep, settings.GetExcludeExtentions());
 			if (result != null)
 			{
 				ReferenceViewerWindow.CreateWindow(result);
@@ -174,8 +165,7 @@ namespace ReferenceViewer
 				return;
 			}
 
-			string command = "/M /S {1} *";
-			Result result = ReferenceViewerProcessor.FindReferencesByCommand(Result.SearchType.WIN_FindStr, command, settings.GetExcludeExtentions());
+			Result result = ReferenceViewerProcessor.FindReferencesByCommand(Result.SearchType.WIN_FindStr, settings.GetExcludeExtentions());
 			if (result != null)
 			{
 				ReferenceViewerWindow.CreateWindow(result);
@@ -202,7 +192,7 @@ namespace ReferenceViewer
 			string[] paths = pathEnv.Split(';');
 			foreach (string path in paths)
 			{
-				if (System.IO.File.Exists(System.IO.Path.Combine(path, "git.exe")))
+				if (System.IO.File.Exists(System.IO.Path.Combine(path, Result.SearchType.WIN_GitGrep.Command().Command)))
 				{
 					return true;
 				}
@@ -219,8 +209,7 @@ namespace ReferenceViewer
 				return;
 			}
 
-			string command = "-C \"{0}\" grep -l {1}";
-			Result result = ReferenceViewerProcessor.FindReferencesByCommand(Result.SearchType.WIN_GitGrep, command, settings.GetExcludeExtentions());
+			Result result = ReferenceViewerProcessor.FindReferencesByCommand(Result.SearchType.WIN_GitGrep, settings.GetExcludeExtentions());
 			if (result != null)
 			{
 				ReferenceViewerWindow.CreateWindow(result);
