@@ -158,13 +158,13 @@ namespace ReferenceViewer
 				}
 
 				var projectFile = Path.Combine(Application.dataPath, line);
-#if UNITY_EDITOR_WIN
-				assetPath = assetPath.Replace("\\", "/");
-#endif
 				// metaの中に参照を握っているケース
 				if (extension == ".meta")
 				{
-					var assetPath = projectFile.Replace(".meta", "").Replace(applicationDataPathWithoutAssets, "");
+					var assetPath = projectFile.Replace(".meta", "").Replace(applicationDataPathWithoutAssets, "");			
+#if UNITY_EDITOR_WIN
+					assetPath = assetPath.Replace("\\", "/");
+#endif
 					if (!string.Equals(assetPath, path, StringComparison.OrdinalIgnoreCase))
 					{
 						assetData.AddReference(assetPath);
