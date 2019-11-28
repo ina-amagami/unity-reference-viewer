@@ -12,4 +12,6 @@ Unity上でアセットの参照を検索し、ウィンドウ上に表示する
 MITライセンス
 https://opensource.org/licenses/mit-license.php  
 
+コード内のライセンス表記を残して頂ければ自由に使用可能です。
+
 Copyright (c) 2019 ina-amagami (ina@amagamina.jp)
