@@ -10,6 +10,18 @@ It's characterized by whether the GUID of the target asset is included in the fi
   
 It process relatively fast depending on the environment. So doesn't cache results.
 
+## Setup
+
+For Unity2019.3.4f1 or Unity2020.1a21 or higher you can add the following lines to the `Packages/manifest.json` in your Unity Project under the dependencies section:
+
+```json
+{
+  "dependencies": {
+    "jp.amagamina.reference-viewer": "https://github.com/ina-amagami/unity-reference-viewer.git?path=/Assets/Plugins/ReferenceViewer"
+  }
+}
+```
+
 ## How to
 
 Right-click the target asset or directory and select "Find References In Project".

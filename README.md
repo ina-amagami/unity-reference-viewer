@@ -7,6 +7,18 @@ Unity上でアセットの参照を検索し、ウィンドウ上に表示する
   
 詳しい解説は[**こちら**](https://amagamina.jp/reference-viewer/)
 
+## セットアップ
+
+Unity2019.3.4f1またはUnity2020.1a21以降ならUnityプロジェクトの`Packages/manifest.json`のdepdendenciesセクションに次の行を追加できます。
+
+```json
+{
+  "dependencies": {
+    "jp.amagamina.reference-viewer": "https://github.com/ina-amagami/unity-reference-viewer.git?path=/Assets/Plugins/ReferenceViewer"
+  }
+}
+```
+
 ## ライセンス条項
 
 MITライセンス
