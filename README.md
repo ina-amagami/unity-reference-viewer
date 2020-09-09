@@ -1,5 +1,7 @@
 # unity-reference-viewer
 
+![unity-reference-viewer](https://amagamina.jp/wp-content/uploads/2019/07/how-to-1.gif)
+
 [**English**](README_EN.md)
 
 Unity上でアセットの参照を検索し、ウィンドウ上に表示するツールです。  
