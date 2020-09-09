@@ -26,6 +26,8 @@ For Unity2019.3.4f1 or Unity2020.1a21 or higher you can add the following lines 
 
 Right-click the target asset or directory and select "Find References In Project".
 
+![unity-reference-viewer](https://amagamina.jp/wp-content/uploads/2019/07/how-to-1.gif)
+
 ## Exclude settings
 
 You can specify the file you want to exclude from the search results in "ExcludeSettings.asset".  
