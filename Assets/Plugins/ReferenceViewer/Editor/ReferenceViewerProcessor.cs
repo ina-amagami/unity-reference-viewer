@@ -108,21 +108,23 @@ namespace ReferenceViewer
 						return result;
 					}
 
-					var p = new Process();
-					string arguments = string.Format(commandInfo.Arguments, Application.dataPath, guid);
-					arguments += searchType.AppendArguments(excludeExtentionList);
-					p.StartInfo.FileName = commandInfo.Command;
-					p.StartInfo.Arguments = arguments;
-					p.StartInfo.CreateNoWindow = true;
-					p.StartInfo.UseShellExecute = false;
-					p.StartInfo.RedirectStandardOutput = true;
-					p.StartInfo.WorkingDirectory = Application.dataPath;
-					p.Start();
-					p.WaitForExit();
+					using (var p = new Process())
+					{
+						string arguments = string.Format(commandInfo.Arguments, Application.dataPath, guid);
+						arguments += searchType.AppendArguments(excludeExtentionList);
+						p.StartInfo.FileName = commandInfo.Command;
+						p.StartInfo.Arguments = arguments;
+						p.StartInfo.CreateNoWindow = true;
+						p.StartInfo.UseShellExecute = false;
+						p.StartInfo.RedirectStandardOutput = true;
+						p.StartInfo.WorkingDirectory = Application.dataPath;
+						p.Start();
 
-					FindByCommand(p, applicationDataPathWithoutAssets, path, eol, assetData, excludeExtentionList);
+						var sr = p.StandardOutput;
+						FindByCommand(sr, applicationDataPathWithoutAssets, path, eol, assetData, excludeExtentionList);
 
-					p.Close();
+						p.WaitForExit();
+					}
 
 					assetData.Apply();
 					result.Assets.Add(assetData);
@@ -139,10 +141,10 @@ namespace ReferenceViewer
 			return null;
 		}
 
-		private static void FindByCommand(Process p, string applicationDataPathWithoutAssets, string path,
+		private static void FindByCommand(StreamReader sr, string applicationDataPathWithoutAssets, string path,
 			string[] eol, AssetReferenceData assetData, List<string> excludeExtentionList = null)
 		{
-			foreach (var line in p.StandardOutput.ReadToEnd().Split(eol, StringSplitOptions.None))
+			foreach (var line in sr.ReadToEnd().Split(eol, StringSplitOptions.None))
 			{
 				if (line == null || line.Trim() == "") continue;
 

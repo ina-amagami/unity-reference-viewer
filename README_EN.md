@@ -10,9 +10,9 @@ It's characterized by whether the GUID of the target asset is included in the fi
   
 It process relatively fast depending on the environment. So doesn't cache results.
 
-## Setup
+## Install
 
-For Unity2019.3.4f1 or Unity2020.1a21 or higher you can add the following lines to the `Packages/manifest.json` in your Unity Project under the dependencies section:
+To install via upm, specify `https://github.com/ina-amagami/unity-reference-viewer.git?path=/Assets/Plugins/ReferenceViewer`
 
 ```json
 {
@@ -49,4 +49,4 @@ Can use by Mac and Windows.
 This software is released under the MIT License.  
 https://opensource.org/licenses/mit-license.php
 
-Copyright (c) 2019 ina-amagami (ina@amagamina.jp)
+Copyright (c) 2019-2021 ina-amagami (ina@amagamina.jp)
