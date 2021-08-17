@@ -12,12 +12,12 @@ It process relatively fast depending on the environment. So doesn't cache result
 
 ## Install
 
-To install via upm, specify `https://github.com/ina-amagami/unity-reference-viewer.git?path=/Assets/Plugins/ReferenceViewer`
+To install via upm, specify `https://github.com/ina-amagami/unity-reference-viewer.git`
 
 ```json
 {
   "dependencies": {
-    "jp.amagamina.reference-viewer": "https://github.com/ina-amagami/unity-reference-viewer.git?path=/Assets/Plugins/ReferenceViewer"
+    "jp.amagamina.reference-viewer": "https://github.com/ina-amagami/unity-reference-viewer.git"
   }
 }
 ```

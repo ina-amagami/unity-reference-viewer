@@ -11,12 +11,12 @@ Unity上でアセットの参照を検索し、ウィンドウ上に表示する
 
 ## インストール
 
-upm経由でインストールする場合は `https://github.com/ina-amagami/unity-reference-viewer.git?path=/Assets/Plugins/ReferenceViewer` を指定して下さい。
+upm経由でインストールする場合は `https://github.com/ina-amagami/unity-reference-viewer.git` を指定して下さい。
 
 ```json
 {
   "dependencies": {
-    "jp.amagamina.reference-viewer": "https://github.com/ina-amagami/unity-reference-viewer.git?path=/Assets/Plugins/ReferenceViewer"
+    "jp.amagamina.reference-viewer": "https://github.com/ina-amagami/unity-reference-viewer.git"
   }
 }
 ```
