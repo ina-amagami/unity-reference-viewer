@@ -1,6 +1,6 @@
 {
   "name": "jp.amagamina.reference-viewer",
-  "version": "1.0.1",
+  "version": "1.1.0",
   "displayName": "unity-reference-viewer",
   "description": "It's a tool for searching asset references on Unity and displaying them on the window.",
   "author": "ina-amagami <ina@amagamina.jp>",
