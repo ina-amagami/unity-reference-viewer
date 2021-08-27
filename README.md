@@ -5,14 +5,17 @@
 [**English**](README_EN.md)
 
 Unity上でアセットの参照を検索し、ウィンドウ上に表示するツールです。  
-(例：テクスチャを使用しているマテリアルを調べる)  
+(例：テクスチャを使用しているマテリアルを調べる)    
+  
+本パッケージをAssets以下の任意の場所に配置するだけで動作します。
   
 詳しい解説は[**こちら**](https://amagamina.jp/blog/reference-viewer/)
 
-## インストール
+## UPMインストール
 
-upm経由でインストールする場合は `https://github.com/ina-amagami/unity-reference-viewer.git` を指定して下さい。
-
+upm経由でインストールする場合は `https://github.com/ina-amagami/unity-reference-viewer.git` を指定して下さい。  
+  
+`Packages/manifest.json` のdependencies内に追加してもインストールできます。
 ```json
 {
   "dependencies": {
