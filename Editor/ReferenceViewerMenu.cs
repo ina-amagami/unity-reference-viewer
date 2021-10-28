@@ -62,7 +62,6 @@ namespace ReferenceViewer
 			return true;
 		}
 
-		[MenuItem("Assets/Find References In Project", false, 25)]
 		[MenuItem("Assets/Find References In Project/By Spotlight", false, 25)]
 		public static void FindReferencesBySpotlight()
 		{
@@ -92,7 +91,6 @@ namespace ReferenceViewer
 			return true;
 		}
 		
-		[MenuItem("Assets/Find References In Project", false, 26)]
 		[MenuItem("Assets/Find References In Project/By Grep", false, 26)]
 		public static void FindReferencesByGrep()
 		{
@@ -122,7 +120,6 @@ namespace ReferenceViewer
 			return true;
 		}
 
-		[MenuItem("Assets/Find References In Project", false, 27)]
 		[MenuItem("Assets/Find References In Project/By GitGrep", false, 27)]
 		public static void FindReferencesByGitGrep()
 		{
@@ -156,7 +153,6 @@ namespace ReferenceViewer
 			return true;
 		}
 
-		[MenuItem("Assets/Find References In Project", false, 25)]
 		[MenuItem("Assets/Find References In Project/By FindStr", false, 25)]
 		public static void FindReferencesByFindStr()
 		{
@@ -200,7 +196,6 @@ namespace ReferenceViewer
 			return false;
 		}
 		
-		[MenuItem("Assets/Find References In Project", false, 27)]
 		[MenuItem("Assets/Find References In Project/By GitGrep", false, 27)]
 		public static void FindReferencesByGitGrep()
 		{
